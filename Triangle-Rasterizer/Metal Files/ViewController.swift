@@ -51,22 +51,31 @@ class ViewController: UIViewController {
         let library = device.makeDefaultLibrary()
         let vertexFunction = library?.makeFunction(name: "vertex_Shader")
         let fragmentfunction = library?.makeFunction(name: "fragment_shader")
+        
+        let vertexDescriptor = MTLVertexDescriptor()
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].bufferIndex = 0
+        vertexDescriptor.attributes[0].offset = 0
+        
+        vertexDescriptor.attributes[1].format = .float4
+        vertexDescriptor.attributes[1].bufferIndex = 0
+        vertexDescriptor.attributes[1].offset = MemoryLayout<simd_float3>.stride
+        
+        vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
+        
+        
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         descriptor.vertexFunction = vertexFunction
         descriptor.fragmentFunction = fragmentfunction
+        descriptor.vertexDescriptor = vertexDescriptor
         do {
             renderPipeLineState = try device.makeRenderPipelineState(descriptor: descriptor)
         }catch {
             print(error)
         }
-        
     }
-    
-
 }
-
-
 
 extension ViewController: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
